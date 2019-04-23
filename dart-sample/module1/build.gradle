@@ -1,0 +1,51 @@
+buildscript {
+    repositories {
+        //this is used for development of the plugin
+        mavenLocal()
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath deps.dart.gradlePlugin
+    }
+
+    //this is used for development of the plugin
+    configurations.classpath {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'dart.henson-plugin'
+
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    api project(':module1-navigation')
+    api deps.android.appCompat
+    api deps.dart.annotations
+    api deps.dart.runtime
+    api deps.henson.runtime
+    api deps.butterknife.runtime
+    api deps.butterknife.annotations
+
+    annotationProcessor deps.butterknife.compiler
+    annotationProcessor deps.dart.compiler
+}
+
+henson {
+    navigatorPackageName = 'com.f2prateek.dart.sample'
+}

@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        //this is used for development of the plugin
+        mavenLocal()
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath deps.dart.gradlePlugin
+    }
+
+    //this is used for development of the plugin
+    configurations.classpath {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'dart.henson-plugin'
+
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId 'com.f2prateek.dart.example'
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation deps.butterknife.runtime
+    implementation deps.dart.annotations
+    implementation deps.dart.runtime
+    implementation deps.henson.runtime
+    implementation project(':app-navigation')
+    implementation project(':module1')
+    implementation project(':module1-navigation')
+
+    annotationProcessor deps.butterknife.compiler
+    annotationProcessor deps.dart.compiler
+}
+
+henson.navigatorPackageName = 'com.f2prateek.dart.example'

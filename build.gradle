@@ -1,0 +1,72 @@
+buildscript {
+    ext.versions = [
+            'minSdk': 14,
+            'compileSdk': 28,
+
+            'supportLibrary': '27.0.0',
+            'androidPlugin': '3.0.1',
+            'androidTools': '27.0.3',
+    ]
+
+    ext.deps = [
+            android: [
+                    'runtime': 'com.google.android:android:4.1.1.4',
+                    'gradlePlugin': "com.android.tools.build:gradle:${versions.androidPlugin}",
+            ],
+            parceler: [
+                    'runtime': 'org.parceler:parceler-api:1.0.4',
+                    'compiler': 'org.parceler:parceler:1.0.4'
+            ],
+            javapoet: 'com.squareup:javapoet:1.9.0',
+            junit: 'junit:junit:4.12',
+            fest: 'com.squareup:fest-android:1.0.7',
+            truth: 'com.google.truth:truth:0.36',
+            robolectric: 'org.robolectric:robolectric:2.4',
+            compiletesting: 'com.google.testing.compile:compile-testing:0.12',
+            spotless: 'com.diffplug.spotless:spotless-plugin-gradle:3.6.0',
+    ]
+
+    repositories {
+        jcenter()
+        google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath deps.android.gradlePlugin
+        classpath deps.spotless
+    }
+}
+
+subprojects {
+    repositories {
+        jcenter()
+        google()
+    }
+
+    apply plugin: "com.diffplug.gradle.spotless"
+
+    def checkSubTask = project.tasks.findByName('check')
+    if(checkSubTask) {
+        tasks['check'].dependsOn checkSubTask
+    }
+    def installSubTask = project.tasks.findByName('install')
+    if(installSubTask) {
+        tasks['install'].dependsOn installSubTask
+    }
+
+    spotless {
+        java {
+            licenseHeaderFile rootProject.file('spotless.license.java.txt')
+            googleJavaFormat() // use a specific formatter for Java files
+        }
+    }
+    tasks.withType(JavaCompile) { task ->
+        task.options.compilerArgs << "-Xlint:deprecation"
+    }
+}
+
+task check {}
+task install {}

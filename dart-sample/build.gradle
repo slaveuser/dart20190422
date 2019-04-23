@@ -1,0 +1,81 @@
+apply plugin: 'com.jakewharton.butterknife'
+
+buildscript {
+    ext.versions = [
+            'minSdk': 14,
+            'compileSdk': 28,
+
+            'supportLibrary': '26.0.0',
+            'androidPlugin': '3.3.0',
+            'androidTools': '28.0.3',
+            'parceler' : '1.0.4',
+            'butterknife' : '9.0.0-SNAPSHOT',
+            'release': '3.0.0',
+    ]
+
+    ext.deps = [
+            android: [
+                    'runtime': 'com.google.android:android:4.1.1.4',
+                    'gradlePlugin': "com.android.tools.build:gradle:${versions.androidPlugin}",
+                    'annotations': "com.android.support:support-annotations:${versions.supportLibrary}",
+                    'appCompat': "com.android.support:appcompat-v7:${versions.supportLibrary}"
+            ],
+            parceler: [
+                    'runtime': "org.parceler:parceler-api:${versions.parceler}",
+                    'compiler': "org.parceler:parceler:${versions.parceler}"
+            ],
+            dart: [
+                'annotations': "com.f2prateek.dart:dart-annotations:${versions.release}",
+                'runtime': "com.f2prateek.dart:dart:${versions.release}",
+                'compiler': "com.f2prateek.dart:dart-processor:${versions.release}",
+                'gradlePlugin': "com.f2prateek.dart:henson-plugin:${versions.release}"
+            ],
+            henson:[
+                'runtime': "com.f2prateek.dart:henson:${versions.release}",
+                'compiler': "com.f2prateek.dart:henson-processor:${versions.release}"
+            ],
+            butterknife:[
+                'runtime': "com.jakewharton:butterknife:${versions.butterknife}",
+                'compiler': "com.jakewharton:butterknife-compiler:${versions.butterknife}",
+                'annotations': "com.jakewharton:butterknife-annotations:${versions.butterknife}",
+                'gradlePlugin': "com.jakewharton:butterknife-gradle-plugin:${versions.butterknife}"
+            ],
+    ]
+
+    repositories {
+        jcenter()
+        google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+
+    dependencies {
+        classpath deps.android.gradlePlugin
+        classpath deps.butterknife.gradlePlugin
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+        // TODO: Remove this
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+
+    tasks.withType(JavaCompile) { task ->
+        task.options.compilerArgs << "-Xlint:deprecation"
+    }
+}
+
+task check {
+    dependsOn gradle.includedBuild('dart-parent').task(':install')
+}
